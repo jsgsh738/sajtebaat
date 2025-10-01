@@ -106,7 +106,7 @@ function renderAuth(){
 async function login(){
   try {
     let res = await api("/login","POST",{email:login_email.value,password:login_pass.value});
-    if(!res.token) throw new Error("Нет токена!");
+    if(!res.token) throw new Error("Неверный логин или пароль");
     token=res.token;
     localStorage.setItem("token",token);
     currentUser=res.user;
@@ -116,14 +116,18 @@ async function login(){
     token=null;
     localStorage.removeItem("token");
     currentUser=null;
-    toast("Ошибка входа: "+e.message);
+    toast("Неверный логин или пароль");
     renderAuth();
   }
 }
 
 async function register(){
   try{
-    await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
+    let res = await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
+    if(res.error && res.error.includes("существует")){
+      toast("Такой аккаунт уже существует");
+      return;
+    }
     toast("Аккаунт создан! Войдите.");
     renderAuth();
   }catch(e){toast("Ошибка: "+e.message);}
@@ -171,7 +175,10 @@ function renderProfile(){
     <div class="card max-w-md mx-auto">
       <h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2>
       <label class="label">Новый пароль</label><input class="input mb-3" id="new_pass" type="password">
-      <button class="btn btn-primary w-full" onclick="changePassword()">Сменить пароль</button>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" onclick="changePassword()">Сменить пароль</button>
+        <button class="btn btn-ghost flex-1" onclick="renderShop()">Назад</button>
+      </div>
     </div>`;
 }
 async function changePassword(){
