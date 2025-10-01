@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Kernel Project</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -13,20 +13,29 @@
       animation:gradientMove 20s ease infinite;
       min-height:100vh;
     }
-    @keyframes gradientMove {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes gradientMove {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
     header{background:rgba(10,10,16,.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.05)}
-    .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;animation:fadeIn .4s ease}
     .input{width:100%;padding:.6rem .8rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#fff}
     .label{display:block;margin-bottom:.25rem;color:rgba(255,255,255,.7);font-size:.86rem}
     .btn{padding:.55rem 1rem;border-radius:10px;font-weight:600;cursor:pointer;transition:.18s}
     .btn-primary{background:linear-gradient(90deg,#7e22ce,#4c1d95);color:#fff}
-    .btn-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+    .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
     .price-old{text-decoration:line-through;opacity:.6;margin-right:.4rem}
     .price-new{color:#c084fc;font-weight:700}
     .badge{font-size:.7rem;background:#6b21a8;padding:.2rem .5rem;border-radius:.5rem}
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Toast */
+    #toast {position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
+    .toast-msg {background:rgba(20,20,30,.9);padding:.6rem 1rem;border-radius:.7rem;font-size:.9rem;animation:fadeIn .3s ease}
   </style>
 </head>
-<body class="min-h-screen">
+<body>
 
 <header class="flex items-center justify-between px-6 py-4">
   <div class="flex items-center gap-2 font-bold text-lg">
@@ -37,37 +46,44 @@
 </header>
 
 <main id="app" class="max-w-6xl mx-auto p-6"></main>
+<div id="toast"></div>
 <footer class="mt-12 text-center text-white/40 text-xs">Kernel Project © 2025</footer>
 
 <script>
-const API = "https://sajtept.onrender.com/api"; // ⚠️ замени на свой backend
+const API = "https://sajtept.onrender.com/api"; // замени на свой backend
 let token = localStorage.getItem("token");
 let currentUser = null;
 
-/* API helper */
-async function api(path, method="GET", data=null) {
-  const res = await fetch(API+path,{
-    method,
-    headers:{
-      "Content-Type":"application/json",
-      ...(token?{Authorization:"Bearer "+token}:{})
-    },
-    body:data?JSON.stringify(data):null
-  });
-  let txt = await res.text();
-  try { return JSON.parse(txt); }
-  catch { throw new Error("Ошибка сервера: "+txt.slice(0,100)); }
+/* --- Уведомления --- */
+function toast(msg){
+  let t=document.createElement("div");
+  t.className="toast-msg";
+  t.innerText=msg;
+  document.getElementById("toast").appendChild(t);
+  setTimeout(()=>t.remove(),3000);
 }
 
-/* UI рендеры */
+/* --- API helper --- */
+async function api(path,method="GET",data=null){
+  const res=await fetch(API+path,{
+    method,
+    headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},
+    body:data?JSON.stringify(data):null
+  });
+  let txt=await res.text();
+  try{return JSON.parse(txt);}catch{throw new Error(txt);}
+}
+
+/* --- Главная --- */
 function renderHero(){
   document.getElementById("app").innerHTML=`
-    <div class="text-center mt-16">
+    <div class="text-center mt-16 card">
       <h1 class="text-3xl font-bold mb-4">Добро пожаловать в Kernel Project</h1>
       <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
     </div>`;
 }
 
+/* --- Логин/регистрация --- */
 function renderAuth(){
   document.getElementById("app").innerHTML=`
     <div class="grid md:grid-cols-2 gap-6 mt-12">
@@ -89,32 +105,29 @@ function renderAuth(){
 
 async function login(){
   try{
-    let email=document.getElementById("login_email").value.trim();
-    let password=document.getElementById("login_pass").value.trim();
-    let res=await api("/login","POST",{email,password});
+    let res=await api("/login","POST",{email:login_email.value,password:login_pass.value});
     token=res.token;localStorage.setItem("token",token);currentUser=res.user;
+    toast("Вход успешный!");
     renderShop();
-  }catch(e){alert(e.message);}
+  }catch(e){toast("Ошибка: "+e.message);}
 }
 
 async function register(){
   try{
-    let email=document.getElementById("reg_email").value.trim();
-    let displayName=document.getElementById("reg_name").value.trim();
-    let password=document.getElementById("reg_pass").value.trim();
-    await api("/register","POST",{email,password,displayName});
-    alert("Аккаунт создан! Теперь войдите.");
+    await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
+    toast("Аккаунт создан! Войдите.");
     renderAuth();
-  }catch(e){alert(e.message);}
+  }catch(e){toast("Ошибка: "+e.message);}
 }
 
+/* --- Магазин --- */
 async function renderShop(){
-  document.getElementById("headerUser").textContent=currentUser?currentUser.email:"Гость";
+  headerUser.textContent=currentUser?currentUser.email:"Гость";
   let prods=await api("/products");
   let html=`<div class="flex gap-3 mb-6">
     <button class="btn btn-ghost" onclick="logout()">Выйти</button>
     <button class="btn btn-ghost" onclick="renderProfile()">Профиль</button>
-    ${currentUser&&currentUser.role==="admin"?`<button class="btn btn-primary" onclick="renderAdmin()">Админка</button>`:""}
+    ${currentUser?.role==="admin"?`<button class="btn btn-primary" onclick="renderAdmin()">Админка</button>`:""}
   </div><div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">`;
   for(let p of prods){
     html+=`
@@ -130,18 +143,23 @@ async function renderShop(){
           ${p.funpay_url?`<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
           ${p.star_url?`<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
         </div>
+        ${currentUser?.role==="admin"?`
+        <div class="mt-3 flex gap-2">
+          <button class="btn btn-ghost text-sm" onclick="editProduct(${p.id})">Редактировать</button>
+          <button class="btn btn-ghost text-sm" onclick="deleteProduct(${p.id})">Удалить</button>
+        </div>`:""}
       </div>`;
   }
   html+="</div>";
-  document.getElementById("app").innerHTML=html;
+  app.innerHTML=html;
 }
 
 function logout(){token=null;localStorage.removeItem("token");currentUser=null;renderHero();}
 
-/* Профиль + смена пароля */
+/* --- Профиль --- */
 function renderProfile(){
-  document.getElementById("app").innerHTML=`
-    <div class="card max-w-md mx-auto mt-12">
+  app.innerHTML=`
+    <div class="card max-w-md mx-auto">
       <h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2>
       <label class="label">Новый пароль</label><input class="input mb-3" id="new_pass" type="password">
       <button class="btn btn-primary w-full" onclick="changePassword()">Сменить пароль</button>
@@ -149,18 +167,18 @@ function renderProfile(){
 }
 async function changePassword(){
   try{
-    let newPass=document.getElementById("new_pass").value.trim();
-    await api("/change-password","POST",{password:newPass});
-    alert("Пароль изменён!");
+    await api("/change-password","POST",{password:new_pass.value});
+    toast("Пароль изменён!");
     renderShop();
-  }catch(e){alert(e.message);}
+  }catch(e){toast("Ошибка: "+e.message);}
 }
 
-/* Админка */
+/* --- Админка --- */
 function renderAdmin(){
-  document.getElementById("app").innerHTML=`
+  app.innerHTML=`
     <div class="card">
-      <h2 class="text-lg font-bold mb-4">Добавить товар</h2>
+      <h2 class="text-lg font-bold mb-4">Добавить/редактировать товар</h2>
+      <label class="label">ID (для редактирования, можно пусто)</label><input class="input mb-2" id="prod_id">
       <label class="label">Название</label><input class="input mb-2" id="prod_title">
       <label class="label">Описание</label><input class="input mb-2" id="prod_desc">
       <label class="label">Цена</label><input class="input mb-2" id="prod_price" type="number">
@@ -169,27 +187,66 @@ function renderAdmin(){
       <label class="label">Ссылка для скачивания</label><input class="input mb-2" id="prod_file">
       <label class="label">Ссылка FunPay</label><input class="input mb-2" id="prod_funpay">
       <label class="label">Ссылка Звёзды</label><input class="input mb-2" id="prod_star">
-      <button class="btn btn-primary mt-2" onclick="addProduct()">Добавить</button>
+      <button class="btn btn-primary mt-2" onclick="saveProduct()">Сохранить</button>
+    </div>
+    <div class="card mt-6">
+      <h2 class="text-lg font-bold mb-4">Назначить админом</h2>
+      <label class="label">Email</label><input class="input mb-2" id="admin_email">
+      <button class="btn btn-primary" onclick="makeAdmin()">Сделать админом</button>
     </div>
     <button class="btn btn-ghost mt-6" onclick="renderShop()">Назад</button>`;
 }
-async function addProduct(){
+
+async function saveProduct(){
   try{
     let data={
-      title:document.getElementById("prod_title").value,
-      description:document.getElementById("prod_desc").value,
-      price:+document.getElementById("prod_price").value,
-      discount:+document.getElementById("prod_discount").value,
-      pinned:document.getElementById("prod_pinned").checked,
+      title:prod_title.value,
+      description:prod_desc.value,
+      price:+prod_price.value,
+      discount:+prod_discount.value,
+      pinned:prod_pinned.checked,
       type:"buy",
-      fileUrl:document.getElementById("prod_file").value,
-      funpayUrl:document.getElementById("prod_funpay").value,
-      starUrl:document.getElementById("prod_star").value
+      fileUrl:prod_file.value,
+      funpayUrl:prod_funpay.value,
+      starUrl:prod_star.value
     };
-    await api("/products","POST",data);
-    alert("Товар добавлен!");
+    if(prod_id.value){
+      await api("/products/"+prod_id.value,"PUT",data);
+      toast("Товар обновлён!");
+    }else{
+      await api("/products","POST",data);
+      toast("Товар добавлен!");
+    }
     renderShop();
-  }catch(e){alert(e.message);}
+  }catch(e){toast("Ошибка: "+e.message);}
+}
+
+async function deleteProduct(id){
+  if(confirm("Удалить товар?")){
+    try{await api("/products/"+id,"DELETE");toast("Товар удалён");renderShop();}
+    catch(e){toast("Ошибка: "+e.message);}
+  }
+}
+
+async function editProduct(id){
+  let p=await api("/products");p=p.find(x=>x.id===id);
+  renderAdmin();
+  prod_id.value=p.id;
+  prod_title.value=p.title;
+  prod_desc.value=p.description;
+  prod_price.value=p.price;
+  prod_discount.value=p.discount;
+  prod_pinned.checked=p.pinned;
+  prod_file.value=p.file_url||"";
+  prod_funpay.value=p.funpay_url||"";
+  prod_star.value=p.star_url||"";
+}
+
+async function makeAdmin(){
+  try{
+    await api("/make-admin","POST",{email:admin_email.value});
+    toast("Пользователь стал админом!");
+  }catch(e){toast("Ошибка: "+e.message);}
 }
 
 renderHero();
