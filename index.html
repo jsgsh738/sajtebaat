@@ -104,12 +104,21 @@ function renderAuth(){
 }
 
 async function login(){
-  try{
-    let res=await api("/login","POST",{email:login_email.value,password:login_pass.value});
-    token=res.token;localStorage.setItem("token",token);currentUser=res.user;
+  try {
+    let res = await api("/login","POST",{email:login_email.value,password:login_pass.value});
+    if(!res.token) throw new Error("Нет токена!");
+    token=res.token;
+    localStorage.setItem("token",token);
+    currentUser=res.user;
     toast("Вход успешный!");
     renderShop();
-  }catch(e){toast("Ошибка: "+e.message);}
+  } catch(e) {
+    token=null;
+    localStorage.removeItem("token");
+    currentUser=null;
+    toast("Ошибка входа: "+e.message);
+    renderAuth();
+  }
 }
 
 async function register(){
