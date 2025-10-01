@@ -6,31 +6,35 @@
   <title>Kernel Project</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* 🌌 Переливающийся фон: тёмный чёрно-фиолетовый */
     body {
       color:#fff; font-family: Inter, sans-serif;
-      background: linear-gradient(-45deg,#050006,#0d0014,#1a0b2a,#0a0010);
-      background-size:400% 400%;
-      animation: gradientMove 20s ease infinite;
+      background: linear-gradient(-45deg,#0a0012,#150020,#1b002b,#000000);
+      background-size: 400% 400%;
+      animation: gradientMove 18s ease infinite;
     }
     @keyframes gradientMove {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
+      0% { background-position: 0% 50% }
+      50% { background-position: 100% 50% }
+      100% { background-position: 0% 50% }
     }
+
+    /* UI элементы */
     .btn{padding:.6rem 1.1rem;border-radius:.7rem;font-weight:600;cursor:pointer;transition:.2s}
-    .btn-primary{background:linear-gradient(90deg,#9333ea,#4f46e5);color:#fff}
+    .btn-primary{background:linear-gradient(90deg,#7e22ce,#4c1d95);color:#fff}
     .btn-primary:hover{opacity:.9}
     .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.06)}
-    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:1rem}
+    .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.5);padding:1rem}
     .input{width:100%;padding:.6rem .9rem;border-radius:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#fff}
     .label{font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:.3rem;display:block}
-    header{background:rgba(15,15,25,.5);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.05)}
+
+    header{background:rgba(15,15,25,.6);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.05)}
     .hero{text-align:center;padding:6rem 1rem;animation:fadeIn 1s ease forwards}
-    .hero h1{font-size:3rem;font-weight:800;background:linear-gradient(90deg,#9333ea,#4f46e5,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero h1{font-size:3rem;font-weight:800;background:linear-gradient(90deg,#9333ea,#6b21a8,#4c1d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     .price-old{text-decoration:line-through;opacity:.6;margin-right:.5rem}
     .price-new{color:#c084fc;font-weight:700}
-    .badge{font-size:.7rem;background:#9333ea;padding:.2rem .5rem;border-radius:.5rem;margin-left:.5rem}
+    .badge{font-size:.7rem;background:#6b21a8;padding:.2rem .5rem;border-radius:.5rem;margin-left:.5rem}
   </style>
 </head>
 <body class="min-h-screen">
@@ -47,10 +51,13 @@
 <footer class="mt-16 text-center text-white/40 text-xs">Kernel Project © 2025</footer>
 
 <script>
-const API = "https://sajtept.onrender.com/api"; // ⚡ заменишь на свой backend Render
+/* ⚡ Настройка API — замени ссылку на свой backend (с /api в конце!) */
+const API = "https://sajtept.onrender.com/api";
+
 let token = localStorage.getItem("token");
 let currentUser = null;
 
+/* Запросы к backend */
 async function api(path, method="GET", data=null) {
   const res = await fetch(API+path, {
     method,
@@ -64,7 +71,7 @@ async function api(path, method="GET", data=null) {
   return res.json();
 }
 
-// --- Hero ---
+/* Главный экран */
 function renderHero() {
   document.getElementById("app").innerHTML = `
     <div class="hero">
@@ -73,7 +80,7 @@ function renderHero() {
     </div>`;
 }
 
-// --- Auth ---
+/* Авторизация / регистрация */
 function renderAuth() {
   document.getElementById("app").innerHTML = `
   <div class="grid md:grid-cols-2 gap-8 mt-12">
@@ -114,36 +121,13 @@ async function register() {
   } catch(e){alert(e.message);}
 }
 
-// --- Profile ---
-function renderProfile() {
-  document.getElementById("app").innerHTML = `
-    <div class="card max-w-md mx-auto">
-      <h2 class="text-xl font-bold mb-4 text-fuchsia-400">Профиль</h2>
-      <p class="mb-4">Вы вошли как <b>${currentUser.displayName||currentUser.email}</b></p>
-      <label class="label">Текущий пароль</label>
-      <input class="input mb-3" id="old_pass" type="password"/>
-      <label class="label">Новый пароль</label>
-      <input class="input mb-3" id="new_pass" type="password"/>
-      <label class="label">Подтверждение нового пароля</label>
-      <input class="input mb-4" id="new_pass2" type="password"/>
-      <button class="btn btn-primary w-full mb-2" onclick="changePassword()">Сменить пароль</button>
-      <button class="btn btn-ghost w-full" onclick="renderApp()">Назад</button>
-    </div>`;
-}
-
-async function changePassword() {
-  alert("Смена пароля реализуется на backend (нужен эндпоинт /api/change-password).");
-}
-
-// --- Shop ---
+/* Магазин */
 async function renderApp() {
   document.getElementById("headerUser").textContent=currentUser? currentUser.email : "Гость";
   const prods=await api("/products");
   let html=`
     <div class="flex gap-4 mb-8">
       <button class="btn btn-ghost" onclick="logout()">Выйти</button>
-      <button class="btn btn-ghost" onclick="renderProfile()">Профиль</button>
-      ${currentUser.role==="admin" ? `<button class="btn btn-ghost" onclick="renderAdmin()">Админ-панель</button>`:""}
     </div>
     <h2 class="text-xl font-semibold mb-3">Магазин</h2>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">`;
@@ -156,66 +140,18 @@ async function renderApp() {
         </div>
         <div class="text-sm text-white/70">${p.description||""}</div>
         <div class="mt-2">${p.discount>0? `<span class="price-old">${p.price}₽</span><span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`:`<span class="price-new">${p.price}₽</span>`}</div>
-        ${p.type==="download"
-          ? `<a href="${p.file_url}" target="_blank" class="btn btn-primary mt-4">Скачать</a>`
-          : `<div class="flex gap-2 mt-4"><a href="${p.funpay_url}" target="_blank" class="btn btn-primary flex-1">Купить (FunPay)</a><a href="${p.star_url}" target="_blank" class="btn btn-primary flex-1">Купить (Звёзды)</a></div>`}
+        <div class="mt-3 flex gap-2">
+          ${p.funpay_url? `<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
+          ${p.star_url? `<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
+          ${p.file_url? `<a class="btn btn-primary text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
+        </div>
       </div>`;
   }
   html+="</div>";
   document.getElementById("app").innerHTML=html;
 }
 
-// --- Admin panel ---
-function renderAdmin() {
-  document.getElementById("app").innerHTML=`
-    <div class="card">
-      <h2 class="text-xl font-bold mb-4">Админ-панель</h2>
-      <label class="label">Название</label><input id="p_title" class="input mb-2"/>
-      <label class="label">Цена</label><input id="p_price" class="input mb-2" type="number"/>
-      <label class="label">Описание</label><textarea id="p_desc" class="input mb-2"></textarea>
-      <label class="label">Скидка %</label><input id="p_discount" class="input mb-2" type="number"/>
-      <label class="label">Закрепить</label><input id="p_pin" type="checkbox" class="mb-2"/>
-      <label class="label">Тип товара</label>
-      <select id="p_type" class="input mb-2"><option value="buy">Купить</option><option value="download">Скачать</option></select>
-      <label class="label">Ссылка 1</label><input id="p_link1" class="input mb-2"/>
-      <label class="label">Ссылка 2</label><input id="p_link2" class="input mb-2"/>
-      <button class="btn btn-primary w-full mt-2" onclick="addProduct()">Добавить товар</button>
-      <hr class="my-4"/>
-      <label class="label">Назначить нового админа</label>
-      <input id="new_admin" class="input mb-2"/>
-      <button class="btn btn-primary w-full" onclick="makeAdmin()">Сделать админом</button>
-      <button class="btn btn-ghost w-full mt-4" onclick="renderApp()">Назад</button>
-    </div>`;
-}
-
-async function addProduct() {
-  try{
-    await api("/products","POST",{
-      title:document.getElementById("p_title").value,
-      description:document.getElementById("p_desc").value,
-      price:parseInt(document.getElementById("p_price").value)||0,
-      discount:parseInt(document.getElementById("p_discount").value)||0,
-      pinned:document.getElementById("p_pin").checked,
-      type:document.getElementById("p_type").value,
-      fileUrl:document.getElementById("p_link1").value,
-      funpayUrl:document.getElementById("p_link1").value,
-      starUrl:document.getElementById("p_link2").value
-    });
-    alert("Товар добавлен!");
-    renderApp();
-  }catch(e){alert(e.message);}
-}
-
-async function makeAdmin() {
-  try{
-    const email=document.getElementById("new_admin").value.trim();
-    await api("/make-admin","POST",{email});
-    alert(email+" теперь админ!");
-  }catch(e){alert(e.message);}
-}
-
 function logout(){token=null;localStorage.removeItem("token");currentUser=null;renderHero();}
-
 renderHero();
 </script>
 </body>
