@@ -7,8 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --glass-bg: rgba(255,255,255,0.04);
-      --glass-border: rgba(255,255,255,0.06);
+      --glass-bg: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.12);
     }
     body {
       color:#fff;
@@ -34,24 +34,25 @@
       font-size:1.2rem;
       color:#e9d5ff;
     }
+    /* 🔘 Стеклянные кнопки */
     .btn {
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:.55rem 1rem;
+      padding:.55rem 1.1rem;
       border-radius:12px;
       font-weight:600;
       cursor:pointer;
       border:1px solid var(--glass-border);
-      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      background:rgba(255,255,255,0.05);
       color:#fff;
-      backdrop-filter:blur(6px) saturate(110%);
+      backdrop-filter:blur(8px) saturate(140%);
       transition:.2s;
     }
-    .btn:hover { transform:translateY(-2px); }
+    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.08); }
     .btn-primary {
-      border:1px solid rgba(124,58,237,0.9);
-      background:linear-gradient(90deg,rgba(124,58,237,0.18),rgba(79,70,229,0.12));
+      border:1px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.06);
     }
     .card {
       background:var(--glass-bg);
@@ -208,14 +209,14 @@ async function renderShop(){
           : `<span class="price-new">${p.price}₽</span>`}
       </div>
       <div class="mt-3 flex flex-wrap gap-2">
-        ${p.file_url?`<a class="btn btn-primary text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
-        ${p.funpay_url?`<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
-        ${p.star_url?`<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
+        ${p.file_url?`<a class="btn text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
+        ${p.funpay_url?`<a class="btn text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
+        ${p.star_url?`<a class="btn text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
       </div>
       ${currentUser?.role==="admin"
         ? `<div class="mt-3 flex gap-2">
-             <button class="btn btn-ghost text-sm" onclick="editProduct('${p.id}','${p.title}','${p.description}','${p.price}','${p.discount}','${p.pinned}','${p.file_url}','${p.funpay_url}','${p.star_url}')">Редактировать</button>
-             <button class="btn btn-ghost text-sm" onclick="deleteProduct('${p.id}')">Удалить</button>
+             <button class="btn text-sm" onclick="editProduct('${p.id}','${p.title}','${p.description}','${p.price}','${p.discount}','${p.pinned}','${p.file_url}','${p.funpay_url}','${p.star_url}')">Редактировать</button>
+             <button class="btn text-sm" onclick="deleteProduct('${p.id}')">Удалить</button>
            </div>`:""}
     </div>`;
   }
@@ -223,7 +224,7 @@ async function renderShop(){
 }
 
 function logout(){token=null;localStorage.removeItem("token");currentUser=null;renderHero();}
-function renderProfile(){app.innerHTML=`<div class="card max-w-md mx-auto"><h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2><label class="label">Новый пароль</label><input id="new_pass" type="password" class="input mb-3"><div class="flex gap-2"><button class="btn btn-primary flex-1" onclick="changePassword()">Сменить пароль</button><button class="btn btn-ghost flex-1" onclick="renderShop()">Назад</button></div></div>`;}
+function renderProfile(){app.innerHTML=`<div class="card max-w-md mx-auto"><h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2><label class="label">Новый пароль</label><input id="new_pass" type="password" class="input mb-3"><div class="flex gap-2"><button class="btn flex-1" onclick="changePassword()">Сменить пароль</button><button class="btn flex-1" onclick="renderShop()">Назад</button></div></div>`;}
 async function changePassword(){try{await api("/change-password","POST",{password:new_pass.value});toast("Пароль изменён!");renderShop();}catch(e){toast("Ошибка: "+e.message);}}
 
 function renderAdmin(){
@@ -239,14 +240,14 @@ function renderAdmin(){
       <label class="label">Ссылка для скачивания</label><input class="input mb-2" id="prod_file">
       <label class="label">Ссылка FunPay</label><input class="input mb-2" id="prod_funpay">
       <label class="label">Ссылка Звёзды</label><input class="input mb-2" id="prod_star">
-      <button class="btn btn-primary mt-2" onclick="saveProduct()">Сохранить</button>
+      <button class="btn mt-2" onclick="saveProduct()">Сохранить</button>
     </div>
     <div class="card mt-6">
       <h2 class="text-lg font-bold mb-4">Назначить админом</h2>
       <label class="label">Email</label><input class="input mb-2" id="admin_email">
-      <button class="btn btn-primary" onclick="makeAdmin()">Сделать админом</button>
+      <button class="btn" onclick="makeAdmin()">Сделать админом</button>
     </div>
-    <button class="btn btn-ghost mt-6" onclick="renderShop()">Назад</button>`;
+    <button class="btn mt-6" onclick="renderShop()">Назад</button>`;
 }
 
 async function saveProduct(){
@@ -284,7 +285,16 @@ async function deleteProduct(id){
   }catch(e){toast("Ошибка: "+e.message);}
 }
 
-renderHero();
+/* --- При загрузке страницы: если токен есть, пробуем сразу магазин --- */
+(async()=>{
+  if(token){
+    try{
+      let prods=await api("/products");
+      currentUser={email:"Вход выполнен"}; // если сервер жив
+      renderShop();
+    }catch{renderHero();}
+  }else renderHero();
+})();
 </script>
 </body>
 </html>
