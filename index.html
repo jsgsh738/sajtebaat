@@ -13,7 +13,7 @@
     body {
       color:#fff;
       font-family:Inter,system-ui,sans-serif;
-      background:linear-gradient(-45deg,#00111a,#001a33,#002244,#000);
+      background:linear-gradient(-45deg,#030015,#001033,#001a55,#000);
       background-size:400% 400%;
       animation:gradientMove 18s ease infinite;
       min-height:100vh;
@@ -24,7 +24,7 @@
       100%{background-position:0% 50%}
     }
     header {
-      background:rgba(10,10,16,0.55);
+      background:rgba(10,10,20,0.55);
       backdrop-filter:blur(6px);
       border-bottom:1px solid rgba(255,255,255,0.03);
       padding:18px 24px;
@@ -32,27 +32,25 @@
     .brand {
       font-weight:700;
       font-size:1.2rem;
-      color:#e9d5ff;
+      color:#dbeafe;
     }
-    /* 🔘 Стеклянные кнопки */
     .btn {
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:.55rem 1.1rem;
+      padding:.6rem 1.2rem;
       border-radius:12px;
       font-weight:600;
       cursor:pointer;
       border:1px solid var(--glass-border);
-      background:rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.07);
       color:#fff;
-      backdrop-filter:blur(12px) saturate(160%);
-      box-shadow:inset 0 0 8px rgba(255,255,255,0.08);
+      backdrop-filter:blur(10px) saturate(160%);
       transition:.2s;
     }
-    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.1); }
+    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.12); }
     .btn-primary {
-      border:1px solid rgba(255,255,255,0.3);
+      border:1px solid rgba(255,255,255,0.25);
       background:rgba(255,255,255,0.08);
     }
     .card {
@@ -70,23 +68,12 @@
     }
     .label {display:block;margin-bottom:.25rem;color:rgba(255,255,255,.72);font-size:.88rem}
     .hero {text-align:center;padding:60px 16px 36px;}
-    .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#f3e8ff;}
+    .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#e0f2fe;}
     .price-old{text-decoration:line-through;opacity:.6;margin-right:.5rem}
-    .price-new{color:#d6b7ff;font-weight:800}
+    .price-new{color:#bfdbfe;font-weight:800}
     #toast {position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
     .toast-msg{background:rgba(14,14,20,0.95);padding:.6rem .9rem;border-radius:10px;font-size:.95rem}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-    /* 📱 Hero-кнопки на телефоне */
-    @media (max-width:640px){
-      .hero-buttons {
-        display:flex;
-        flex-direction:column;
-        gap:12px;
-        align-items:stretch;
-      }
-      .hero-buttons .btn { width:100%; }
-    }
   </style>
 </head>
 <body>
@@ -125,17 +112,14 @@ async function api(path,method="GET",data=null){
       headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},
       body:data?JSON.stringify(data):null
     });
-    if(res.status===401){ // ✅ токен протух
+    if(res.status===401){
       token=null;localStorage.removeItem("token");currentUser=null;
       toast("Сессия устарела, войдите снова");
-      renderAuth();
-      throw new Error("401 Unauthorized");
+      renderAuth();return;
     }
     let txt=await res.text();
     try{return JSON.parse(txt);}catch{throw new Error(txt);}
-  }catch(e){
-    throw e;
-  }
+  }catch(e){toast("Ошибка соединения");throw e;}
 }
 
 /* --- Главная --- */
@@ -144,9 +128,11 @@ function renderHero(){
     <section class="hero card">
       <div style="max-width:900px;margin:0 auto">
         <h1>Kernel Project</h1>
-        <div class="hero-buttons" style="margin-top:18px;">
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-center mt-6">
           <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
-          <button class="btn btn-ghost" onclick="renderWhy()">Почему вы должны выбрать нас?</button>
+          <button class="btn" onclick="renderWhy()">Почему вы должны выбрать нас?</button>
+          <button class="btn" onclick="renderPrivacy()">условия конфиденциальности</button>
+          <a class="btn" href="https://t.me/kernelprojec" target="_blank">наш тгк</a>
         </div>
       </div>
     </section>`;
@@ -161,9 +147,27 @@ function renderWhy(){
         <li>Лучшие фиксы софтов</li>
         <li>Регулярные дропы обновлений</li>
       </ul>
-      <div class="mt-4">
+      <div class="mt-4 flex gap-2">
         <button class="btn btn-primary" onclick="renderAuth()">Начать</button>
-        <button class="btn btn-ghost ml-2" onclick="renderHero()">Назад</button>
+        <button class="btn" onclick="renderHero()">Назад</button>
+      </div>
+    </div>`;
+}
+
+/* --- Условия конфиденциальности --- */
+function renderPrivacy(){
+  document.getElementById("app").innerHTML=`
+    <div class="card text-left">
+      <h2 class="text-2xl font-bold mb-4">Условия конфиденциальности</h2>
+      <ol class="list-decimal list-inside space-y-2 text-white/80">
+        <li><b>Сбор данных</b>: При регистрации мы запрашиваем только необходимые данные: адрес электронной почты, имя и пароль.</li>
+        <li><b>Хранение паролей</b>: Ваши пароли никогда не хранятся в открытом виде. Они защищены с помощью надёжного шифрования (bcrypt).</li>
+        <li><b>Использование email</b>: Email используется исключительно для входа и связи. Мы не передаём его третьим лицам и не используем для спама.</li>
+        <li><b>Авторизация и безопасность</b>: Для входа применяются защищённые токены, которые автоматически обновляются.</li>
+        <li><b>Защита данных</b>: Все данные передаются по SSL/TLS, система регулярно обновляется.</li>
+      </ol>
+      <div class="mt-6">
+        <button class="btn" onclick="renderHero()">Назад</button>
       </div>
     </div>`;
 }
@@ -199,6 +203,7 @@ async function login(){
     toast("Неверный логин или пароль");renderAuth();
   }
 }
+
 async function register(){
   try{
     let res=await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
@@ -209,11 +214,13 @@ async function register(){
 
 /* --- Магазин --- */
 async function renderShop(){
-  headerUser.textContent=currentUser?currentUser.email:"Гость";
+  headerUser.textContent=currentUser
+    ? (currentUser.role==="admin" ? "[ADMIN] " : "")+(currentUser.displayName||currentUser.email)
+    : "Гость";
   let prods=await api("/products");
-  let html=`<div class="flex gap-3 mb-6">
-    <button class="btn btn-ghost" onclick="logout()">Выйти</button>
-    <button class="btn btn-ghost" onclick="renderProfile()">Профиль</button>
+  let html=`<div class="flex flex-wrap gap-3 mb-6">
+    <button class="btn" onclick="logout()">Выйти</button>
+    <button class="btn" onclick="renderProfile()">Профиль</button>
     ${currentUser?.role==="admin"?`<button class="btn btn-primary" onclick="renderAdmin()">Админка</button>`:""}
   </div><div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">`;
   for(let p of prods){
@@ -226,8 +233,7 @@ async function renderShop(){
       <div class="text-sm text-white/70">${p.description||""}</div>
       <div class="mt-2">
         ${p.discount>0
-          ? `<span class="price-old">${p.price}₽</span>
-             <span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`
+          ? `<span class="price-old">${p.price}₽</span><span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`
           : `<span class="price-new">${p.price}₽</span>`}
       </div>
       <div class="mt-3 flex flex-wrap gap-2">
@@ -246,9 +252,21 @@ async function renderShop(){
 }
 
 function logout(){token=null;localStorage.removeItem("token");currentUser=null;renderHero();}
-function renderProfile(){app.innerHTML=`<div class="card max-w-md mx-auto"><h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2><label class="label">Новый пароль</label><input id="new_pass" type="password" class="input mb-3"><div class="flex gap-2"><button class="btn flex-1" onclick="changePassword()">Сменить пароль</button><button class="btn flex-1" onclick="renderShop()">Назад</button></div></div>`;}
+
+/* --- Профиль --- */
+function renderProfile(){
+  app.innerHTML=`<div class="card max-w-md mx-auto">
+    <h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2>
+    <label class="label">Новый пароль</label><input id="new_pass" type="password" class="input mb-3">
+    <div class="flex gap-2">
+      <button class="btn flex-1" onclick="changePassword()">Сменить пароль</button>
+      <button class="btn flex-1" onclick="renderShop()">Назад</button>
+    </div>
+  </div>`;
+}
 async function changePassword(){try{await api("/change-password","POST",{password:new_pass.value});toast("Пароль изменён!");renderShop();}catch(e){toast("Ошибка: "+e.message);}}
 
+/* --- Админка --- */
 function renderAdmin(){
   app.innerHTML=`
     <div class="card">
@@ -313,7 +331,7 @@ async function deleteProduct(id){
   }catch(e){toast("Ошибка: "+e.message);}
 }
 
-/* --- При загрузке страницы: если токен есть, пробуем сразу магазин --- */
+/* --- При загрузке --- */
 (async()=>{
   if(token){
     try{
