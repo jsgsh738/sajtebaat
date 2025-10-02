@@ -3,14 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Kernel Project</title>
+  <title>Kernel Projest</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --glass-bg: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.06);
+    }
     body {
-      color:#fff;font-family:Inter,system-ui,sans-serif;
-      background:linear-gradient(-45deg,#050006,#100018,#180029,#000);
+      color:#fff;
+      font-family:Inter,system-ui,sans-serif;
+      background:linear-gradient(-45deg,#050006,#0c0016,#140022,#000);
       background-size:400% 400%;
-      animation:gradientMove 20s ease infinite;
+      animation:gradientMove 18s ease infinite;
       min-height:100vh;
     }
     @keyframes gradientMove {
@@ -18,43 +23,87 @@
       50%{background-position:100% 50%}
       100%{background-position:0% 50%}
     }
-    header{background:rgba(10,10,16,.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.05)}
-    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;animation:fadeIn .4s ease}
-    .input{width:100%;padding:.6rem .8rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#fff}
-    .label{display:block;margin-bottom:.25rem;color:rgba(255,255,255,.7);font-size:.86rem}
-    .btn{padding:.55rem 1rem;border-radius:10px;font-weight:600;cursor:pointer;transition:.18s}
-    .btn-primary{background:linear-gradient(90deg,#7e22ce,#4c1d95);color:#fff}
-    .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
-    .price-old{text-decoration:line-through;opacity:.6;margin-right:.4rem}
-    .price-new{color:#c084fc;font-weight:700}
-    .badge{font-size:.7rem;background:#6b21a8;padding:.2rem .5rem;border-radius:.5rem}
-    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-    /* Toast */
+    header {
+      background:rgba(10,10,16,0.55);
+      backdrop-filter:blur(6px);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      padding:18px 24px;
+    }
+    .brand {
+      font-weight:700;
+      font-size:1.05rem;
+      color:#e9d5ff;
+    }
+    .brand-sub {
+      font-size:.85rem;
+      color:rgba(255,255,255,0.6);
+      margin-left:4px;
+    }
+    .btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:.55rem 1rem;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      border:1px solid var(--glass-border);
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      color:#fff;
+      backdrop-filter:blur(6px) saturate(110%);
+      transition:.2s;
+    }
+    .btn:hover { transform:translateY(-2px); }
+    .btn-primary {
+      border:1px solid rgba(124,58,237,0.9);
+      background:linear-gradient(90deg,rgba(124,58,237,0.18),rgba(79,70,229,0.12));
+    }
+    .card {
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      padding:18px;
+      animation:fadeIn .45s ease both;
+    }
+    .input {
+      width:100%;padding:.62rem .85rem;border-radius:10px;
+      background:rgba(255,255,255,0.025);
+      border:1px solid rgba(255,255,255,0.04);
+      color:#fff;
+    }
+    .label {display:block;margin-bottom:.25rem;color:rgba(255,255,255,.72);font-size:.88rem}
+    .hero {text-align:center;padding:60px 16px 36px;}
+    .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#f3e8ff;}
+    .hero p {color:rgba(255,255,255,0.7);max-width:760px;margin:0 auto 1.25rem;}
+    .price-old{text-decoration:line-through;opacity:.6;margin-right:.5rem}
+    .price-new{color:#d6b7ff;font-weight:800}
     #toast {position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
-    .toast-msg {background:rgba(20,20,30,.9);padding:.6rem 1rem;border-radius:.7rem;font-size:.9rem;animation:fadeIn .3s ease}
+    .toast-msg{background:rgba(14,14,20,0.95);padding:.6rem .9rem;border-radius:10px;font-size:.95rem}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
-
-<header class="flex items-center justify-between px-6 py-4">
-  <div class="flex items-center gap-2 font-bold text-lg">
-    <span class="text-fuchsia-400">⚡</span>
-    <span class="bg-gradient-to-r from-fuchsia-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">Kernel Project</span>
+<header class="flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <div>
+      <div class="brand">Kernel Projest</div>
+      <div class="brand-sub">Лучшие фиксы • Регулярные обновления</div>
+    </div>
   </div>
   <div id="headerUser" class="opacity-80 text-sm">Гость</div>
 </header>
 
 <main id="app" class="max-w-6xl mx-auto p-6"></main>
 <div id="toast"></div>
-<footer class="mt-12 text-center text-white/40 text-xs">Kernel Project © 2025</footer>
+<footer class="mt-12 text-center text-white/40 text-xs pb-8">
+  Kernel Projest © 2025
+</footer>
 
 <script>
-const API = "https://sajtept.onrender.com/api"; // замени на свой backend
-let token = localStorage.getItem("token");
-let currentUser = null;
+const API="https://sajtept.onrender.com/api";
+let token=localStorage.getItem("token");
+let currentUser=null;
 
-/* --- Уведомления --- */
 function toast(msg){
   let t=document.createElement("div");
   t.className="toast-msg";
@@ -63,7 +112,6 @@ function toast(msg){
   setTimeout(()=>t.remove(),3000);
 }
 
-/* --- API helper --- */
 async function api(path,method="GET",data=null){
   const res=await fetch(API+path,{
     method,
@@ -77,59 +125,63 @@ async function api(path,method="GET",data=null){
 /* --- Главная --- */
 function renderHero(){
   document.getElementById("app").innerHTML=`
-    <div class="text-center mt-16 card">
-      <h1 class="text-3xl font-bold mb-4">Добро пожаловать в Kernel Project</h1>
-      <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
-    </div>`;
+    <section class="hero card">
+      <div style="max-width:900px;margin:0 auto">
+        <h1>Kernel Projest</h1>
+        <p>Лучшие фиксы для телефонов и регулярные дропы обновлений — всё в одном месте.</p>
+        <div style="margin-top:18px;">
+          <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5 mt-10">
+          <div class="card">
+            <h3 class="text-xl font-bold mb-2">Лучшие фиксы софтов</h3>
+            <p class="text-sm text-white/70">Актуальные патчи и обновления для телефонов. Проверенные, стабильные и безопасные.</p>
+          </div>
+          <div class="card">
+            <h3 class="text-xl font-bold mb-2">Регулярный дроп фиксов</h3>
+            <p class="text-sm text-white/70">Новые исправления каждую неделю — ваш смартфон всегда будет работать как надо.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
 }
 
-/* --- Логин/регистрация --- */
+/* --- Авторизация --- */
 function renderAuth(){
   document.getElementById("app").innerHTML=`
-    <div class="grid md:grid-cols-2 gap-6 mt-12">
+    <div class="grid md:grid-cols-2 gap-6">
       <div class="card">
-        <h2 class="text-xl font-bold mb-4">Вход</h2>
-        <label class="label">E-mail</label><input class="input mb-3" id="login_email">
-        <label class="label">Пароль</label><input class="input mb-4" id="login_pass" type="password">
+        <h3 class="font-bold mb-2">Вход</h3>
+        <label class="label">E-mail</label><input id="login_email" class="input mb-3"/>
+        <label class="label">Пароль</label><input id="login_pass" class="input mb-4" type="password"/>
         <button class="btn btn-primary w-full" onclick="login()">Войти</button>
       </div>
       <div class="card">
-        <h2 class="text-xl font-bold mb-4">Регистрация</h2>
-        <label class="label">E-mail</label><input class="input mb-3" id="reg_email">
-        <label class="label">Имя</label><input class="input mb-3" id="reg_name">
-        <label class="label">Пароль</label><input class="input mb-4" id="reg_pass" type="password">
+        <h3 class="font-bold mb-2">Регистрация</h3>
+        <label class="label">E-mail</label><input id="reg_email" class="input mb-3"/>
+        <label class="label">Имя</label><input id="reg_name" class="input mb-3"/>
+        <label class="label">Пароль</label><input id="reg_pass" class="input mb-4" type="password"/>
         <button class="btn btn-primary w-full" onclick="register()">Создать аккаунт</button>
       </div>
     </div>`;
 }
 
 async function login(){
-  try {
-    let res = await api("/login","POST",{email:login_email.value,password:login_pass.value});
+  try{
+    let res=await api("/login","POST",{email:login_email.value,password:login_pass.value});
     if(!res.token) throw new Error("Неверный логин или пароль");
-    token=res.token;
-    localStorage.setItem("token",token);
-    currentUser=res.user;
-    toast("Вход успешный!");
-    renderShop();
-  } catch(e) {
-    token=null;
-    localStorage.removeItem("token");
-    currentUser=null;
-    toast("Неверный логин или пароль");
-    renderAuth();
+    token=res.token;localStorage.setItem("token",token);currentUser=res.user;
+    toast("Вход успешный!");renderShop();
+  }catch(e){
+    token=null;localStorage.removeItem("token");currentUser=null;
+    toast("Неверный логин или пароль");renderAuth();
   }
 }
-
 async function register(){
   try{
-    let res = await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
-    if(res.error && res.error.includes("существует")){
-      toast("Такой аккаунт уже существует");
-      return;
-    }
-    toast("Аккаунт создан! Войдите.");
-    renderAuth();
+    let res=await api("/register","POST",{email:reg_email.value,password:reg_pass.value,displayName:reg_name.value});
+    if(res.error&&res.error.includes("существует")){toast("Такой аккаунт уже существует");return;}
+    toast("Аккаунт создан! Войдите.");renderAuth();
   }catch(e){toast("Ошибка: "+e.message);}
 }
 
@@ -144,57 +196,29 @@ async function renderShop(){
   </div><div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">`;
   for(let p of prods){
     html+=`
-      <div class="card">
-        <div class="flex justify-between mb-2">
-          <div class="font-semibold">${p.title}</div>
-          ${p.pinned?'<span class="badge">Закреп</span>':""}
-        </div>
-        <div class="text-sm text-white/70">${p.description||""}</div>
-        <div class="mt-2">${p.discount>0?`<span class="price-old">${p.price}₽</span><span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`:`<span class="price-new">${p.price}₽</span>`}</div>
-        <div class="mt-3 flex flex-wrap gap-2">
-          ${p.file_url?`<a class="btn btn-primary text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
-          ${p.funpay_url?`<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
-          ${p.star_url?`<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
-        </div>
-        ${currentUser?.role==="admin"?`
-        <div class="mt-3 flex gap-2">
-          <button class="btn btn-ghost text-sm" onclick="editProduct(${p.id})">Редактировать</button>
-          <button class="btn btn-ghost text-sm" onclick="deleteProduct(${p.id})">Удалить</button>
-        </div>`:""}
-      </div>`;
+    <div class="card">
+      <div class="flex justify-between mb-2"><div class="font-semibold">${p.title}</div>${p.pinned?'<span>Закреп</span>':""}</div>
+      <div class="text-sm text-white/70">${p.description||""}</div>
+      <div class="mt-2">${p.discount>0?`<span class="price-old">${p.price}₽</span><span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`:`<span class="price-new">${p.price}₽</span>`}</div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        ${p.file_url?`<a class="btn btn-primary text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
+        ${p.funpay_url?`<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
+        ${p.star_url?`<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
+      </div>
+    </div>`;
   }
-  html+="</div>";
-  app.innerHTML=html;
+  html+="</div>";app.innerHTML=html;
 }
 
 function logout(){token=null;localStorage.removeItem("token");currentUser=null;renderHero();}
+function renderProfile(){app.innerHTML=`<div class="card max-w-md mx-auto"><h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2><label class="label">Новый пароль</label><input id="new_pass" type="password" class="input mb-3"><div class="flex gap-2"><button class="btn btn-primary flex-1" onclick="changePassword()">Сменить пароль</button><button class="btn btn-ghost flex-1" onclick="renderShop()">Назад</button></div></div>`;}
+async function changePassword(){try{await api("/change-password","POST",{password:new_pass.value});toast("Пароль изменён!");renderShop();}catch(e){toast("Ошибка: "+e.message);}}
 
-/* --- Профиль --- */
-function renderProfile(){
-  app.innerHTML=`
-    <div class="card max-w-md mx-auto">
-      <h2 class="text-xl mb-4">Профиль: ${currentUser.displayName||currentUser.email}</h2>
-      <label class="label">Новый пароль</label><input class="input mb-3" id="new_pass" type="password">
-      <div class="flex gap-2">
-        <button class="btn btn-primary flex-1" onclick="changePassword()">Сменить пароль</button>
-        <button class="btn btn-ghost flex-1" onclick="renderShop()">Назад</button>
-      </div>
-    </div>`;
-}
-async function changePassword(){
-  try{
-    await api("/change-password","POST",{password:new_pass.value});
-    toast("Пароль изменён!");
-    renderShop();
-  }catch(e){toast("Ошибка: "+e.message);}
-}
-
-/* --- Админка --- */
 function renderAdmin(){
   app.innerHTML=`
     <div class="card">
       <h2 class="text-lg font-bold mb-4">Добавить/редактировать товар</h2>
-      <label class="label">ID (для редактирования, можно пусто)</label><input class="input mb-2" id="prod_id">
+      <label class="label">ID</label><input class="input mb-2" id="prod_id">
       <label class="label">Название</label><input class="input mb-2" id="prod_title">
       <label class="label">Описание</label><input class="input mb-2" id="prod_desc">
       <label class="label">Цена</label><input class="input mb-2" id="prod_price" type="number">
@@ -215,49 +239,12 @@ function renderAdmin(){
 
 async function saveProduct(){
   try{
-    let data={
-      title:prod_title.value,
-      description:prod_desc.value,
-      price:+prod_price.value,
-      discount:+prod_discount.value,
-      pinned:prod_pinned.checked,
-      type:"buy",
-      fileUrl:prod_file.value,
-      funpayUrl:prod_funpay.value,
-      starUrl:prod_star.value
-    };
-    if(prod_id.value){
-      await api("/products/"+prod_id.value,"PUT",data);
-      toast("Товар обновлён!");
-    }else{
-      await api("/products","POST",data);
-      toast("Товар добавлен!");
-    }
+    let data={title:prod_title.value,description:prod_desc.value,price:+prod_price.value,discount:+prod_discount.value,pinned:prod_pinned.checked,fileUrl:prod_file.value,funpayUrl:prod_funpay.value,starUrl:prod_star.value};
+    if(prod_id.value){await api("/products/"+prod_id.value,"PUT",data);toast("Товар обновлён!");}
+    else{await api("/products","POST",data);toast("Товар добавлен!");}
     renderShop();
   }catch(e){toast("Ошибка: "+e.message);}
 }
-
-async function deleteProduct(id){
-  if(confirm("Удалить товар?")){
-    try{await api("/products/"+id,"DELETE");toast("Товар удалён");renderShop();}
-    catch(e){toast("Ошибка: "+e.message);}
-  }
-}
-
-async function editProduct(id){
-  let p=await api("/products");p=p.find(x=>x.id===id);
-  renderAdmin();
-  prod_id.value=p.id;
-  prod_title.value=p.title;
-  prod_desc.value=p.description;
-  prod_price.value=p.price;
-  prod_discount.value=p.discount;
-  prod_pinned.checked=p.pinned;
-  prod_file.value=p.file_url||"";
-  prod_funpay.value=p.funpay_url||"";
-  prod_star.value=p.star_url||"";
-}
-
 async function makeAdmin(){
   try{
     await api("/make-admin","POST",{email:admin_email.value});
