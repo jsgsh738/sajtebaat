@@ -215,7 +215,7 @@ async function renderShop(){
       </div>
       ${currentUser?.role==="admin"
         ? `<div class="mt-3 flex gap-2">
-             <button class="btn text-sm" onclick="editProduct('${p.id}','${p.title}','${p.description}','${p.price}','${p.discount}','${p.pinned}','${p.file_url}','${p.funpay_url}','${p.star_url}')">Редактировать</button>
+             <button class="btn text-sm" onclick="editProduct('${p.id}','${p.title}','${p.description}','${p.price}','${p.discount}','${p.pinned}','${p.file_url}','${p.funpay_url}','${p.star_url}','${p.type}')">Редактировать</button>
              <button class="btn text-sm" onclick="deleteProduct('${p.id}')">Удалить</button>
            </div>`:""}
     </div>`;
@@ -237,6 +237,11 @@ function renderAdmin(){
       <label class="label">Цена</label><input class="input mb-2" id="prod_price" type="number">
       <label class="label">Скидка (%)</label><input class="input mb-2" id="prod_discount" type="number" value="0">
       <label class="label">Закрепить</label><input id="prod_pinned" type="checkbox" class="mb-2">
+      <label class="label">Тип товара</label>
+      <select class="input mb-2" id="prod_type">
+        <option value="buy">Покупка</option>
+        <option value="download">Скачивание</option>
+      </select>
       <label class="label">Ссылка для скачивания</label><input class="input mb-2" id="prod_file">
       <label class="label">Ссылка FunPay</label><input class="input mb-2" id="prod_funpay">
       <label class="label">Ссылка Звёзды</label><input class="input mb-2" id="prod_star">
@@ -252,7 +257,7 @@ function renderAdmin(){
 
 async function saveProduct(){
   try{
-    let data={title:prod_title.value,description:prod_desc.value,price:+prod_price.value,discount:+prod_discount.value,pinned:prod_pinned.checked,fileUrl:prod_file.value,funpayUrl:prod_funpay.value,starUrl:prod_star.value};
+    let data={title:prod_title.value,description:prod_desc.value,price:+prod_price.value,discount:+prod_discount.value,pinned:prod_pinned.checked,type:prod_type.value,fileUrl:prod_file.value,funpayUrl:prod_funpay.value,starUrl:prod_star.value};
     if(prod_id.value){await api("/products/"+prod_id.value,"PUT",data);toast("Товар обновлён!");}
     else{await api("/products","POST",data);toast("Товар добавлен!");}
     renderShop();
@@ -264,7 +269,7 @@ async function makeAdmin(){
     toast("Пользователь стал админом!");
   }catch(e){toast("Ошибка: "+e.message);}
 }
-function editProduct(id,title,desc,price,discount,pinned,file,funpay,star){
+function editProduct(id,title,desc,price,discount,pinned,file,funpay,star,type){
   renderAdmin();
   prod_id.value=id;
   prod_title.value=title;
@@ -275,6 +280,7 @@ function editProduct(id,title,desc,price,discount,pinned,file,funpay,star){
   prod_file.value=file;
   prod_funpay.value=funpay;
   prod_star.value=star;
+  prod_type.value=type||"buy";
 }
 async function deleteProduct(id){
   if(!confirm("Удалить товар?")) return;
@@ -289,9 +295,8 @@ async function deleteProduct(id){
 (async()=>{
   if(token){
     try{
-      let prods=await api("/products");
-      currentUser={email:"Вход выполнен"}; // если сервер жив
-      renderShop();
+      let me=await api("/me"); // ✅ новый запрос
+      if(me?.email){currentUser=me;renderShop();return;}
     }catch{renderHero();}
   }else renderHero();
 })();
