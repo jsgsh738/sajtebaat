@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Kernel Projest</title>
+  <title>Kernel Project</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -31,13 +31,8 @@
     }
     .brand {
       font-weight:700;
-      font-size:1.05rem;
+      font-size:1.2rem;
       color:#e9d5ff;
-    }
-    .brand-sub {
-      font-size:.85rem;
-      color:rgba(255,255,255,0.6);
-      margin-left:4px;
     }
     .btn {
       display:inline-flex;
@@ -74,7 +69,7 @@
     .label {display:block;margin-bottom:.25rem;color:rgba(255,255,255,.72);font-size:.88rem}
     .hero {text-align:center;padding:60px 16px 36px;}
     .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#f3e8ff;}
-    .hero p {color:rgba(255,255,255,0.7);max-width:760px;margin:0 auto 1.25rem;}
+    .hero p {color:rgba(255,255,255,0.85);max-width:760px;margin:0 auto 1.25rem;}
     .price-old{text-decoration:line-through;opacity:.6;margin-right:.5rem}
     .price-new{color:#d6b7ff;font-weight:800}
     #toast {position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
@@ -86,8 +81,7 @@
 <header class="flex items-center justify-between">
   <div class="flex items-center gap-2">
     <div>
-      <div class="brand">Kernel Projest</div>
-      <div class="brand-sub">Лучшие фиксы • Регулярные обновления</div>
+      <div class="brand">Kernel Project</div>
     </div>
   </div>
   <div id="headerUser" class="opacity-80 text-sm">Гость</div>
@@ -96,7 +90,7 @@
 <main id="app" class="max-w-6xl mx-auto p-6"></main>
 <div id="toast"></div>
 <footer class="mt-12 text-center text-white/40 text-xs pb-8">
-  Kernel Projest © 2025
+  Kernel Project © 2025
 </footer>
 
 <script>
@@ -127,23 +121,32 @@ function renderHero(){
   document.getElementById("app").innerHTML=`
     <section class="hero card">
       <div style="max-width:900px;margin:0 auto">
-        <h1>Kernel Projest</h1>
-        <p>Лучшие фиксы для телефонов и регулярные дропы обновлений — всё в одном месте.</p>
+        <h1>Kernel Project</h1>
+        <p>Лучшие фиксы софтов для телефонов и регулярные дропы обновлений</p>
         <div style="margin-top:18px;">
           <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
-        </div>
-        <div class="grid md:grid-cols-2 gap-5 mt-10">
-          <div class="card">
-            <h3 class="text-xl font-bold mb-2">Лучшие фиксы софтов</h3>
-            <p class="text-sm text-white/70">Актуальные патчи и обновления для телефонов. Проверенные, стабильные и безопасные.</p>
-          </div>
-          <div class="card">
-            <h3 class="text-xl font-bold mb-2">Регулярный дроп фиксов</h3>
-            <p class="text-sm text-white/70">Новые исправления каждую неделю — ваш смартфон всегда будет работать как надо.</p>
-          </div>
+          <button class="btn btn-ghost" style="margin-left:10px" onclick="renderWhy()">Почему вы должны выбрать нас?</button>
         </div>
       </div>
     </section>`;
+}
+
+/* --- Почему мы --- */
+function renderWhy(){
+  document.getElementById("app").innerHTML=`
+    <div class="card">
+      <h2 class="text-xl font-bold mb-4">Почему вы должны выбрать нас?</h2>
+      <ul class="text-white/80 text-left list-disc list-inside space-y-2">
+        <li>Лучшие фиксы для телефонов</li>
+        <li>Регулярные дропы обновлений</li>
+        <li>Админ-панель для управления товарами</li>
+        <li>Скидки и закрепленные товары</li>
+      </ul>
+      <div class="mt-4">
+        <button class="btn btn-primary" onclick="renderAuth()">Начать</button>
+        <button class="btn btn-ghost ml-2" onclick="renderHero()">Назад</button>
+      </div>
+    </div>`;
 }
 
 /* --- Авторизация --- */
@@ -197,14 +200,27 @@ async function renderShop(){
   for(let p of prods){
     html+=`
     <div class="card">
-      <div class="flex justify-between mb-2"><div class="font-semibold">${p.title}</div>${p.pinned?'<span>Закреп</span>':""}</div>
+      <div class="flex justify-between mb-2">
+        <div class="font-semibold">${p.title}</div>
+        ${p.pinned?'<span>Закреп</span>':""}
+      </div>
       <div class="text-sm text-white/70">${p.description||""}</div>
-      <div class="mt-2">${p.discount>0?`<span class="price-old">${p.price}₽</span><span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`:`<span class="price-new">${p.price}₽</span>`}</div>
+      <div class="mt-2">
+        ${p.discount>0
+          ? `<span class="price-old">${p.price}₽</span>
+             <span class="price-new">${Math.round(p.price*(1-p.discount/100))}₽ (-${p.discount}%)</span>`
+          : `<span class="price-new">${p.price}₽</span>`}
+      </div>
       <div class="mt-3 flex flex-wrap gap-2">
         ${p.file_url?`<a class="btn btn-primary text-sm" href="${p.file_url}" target="_blank">Скачать</a>`:""}
         ${p.funpay_url?`<a class="btn btn-primary text-sm" href="${p.funpay_url}" target="_blank">Купить (FunPay)</a>`:""}
         ${p.star_url?`<a class="btn btn-primary text-sm" href="${p.star_url}" target="_blank">Купить (Звёзды)</a>`:""}
       </div>
+      ${currentUser?.role==="admin"
+        ? `<div class="mt-3 flex gap-2">
+             <button class="btn btn-ghost text-sm" onclick="editProduct('${p.id}','${p.title}','${p.description}','${p.price}','${p.discount}','${p.pinned}','${p.file_url}','${p.funpay_url}','${p.star_url}')">Редактировать</button>
+             <button class="btn btn-ghost text-sm" onclick="deleteProduct('${p.id}')">Удалить</button>
+           </div>`:""}
     </div>`;
   }
   html+="</div>";app.innerHTML=html;
@@ -249,6 +265,26 @@ async function makeAdmin(){
   try{
     await api("/make-admin","POST",{email:admin_email.value});
     toast("Пользователь стал админом!");
+  }catch(e){toast("Ошибка: "+e.message);}
+}
+function editProduct(id,title,desc,price,discount,pinned,file,funpay,star){
+  renderAdmin();
+  prod_id.value=id;
+  prod_title.value=title;
+  prod_desc.value=desc;
+  prod_price.value=price;
+  prod_discount.value=discount;
+  prod_pinned.checked=(pinned==="true"||pinned===true);
+  prod_file.value=file;
+  prod_funpay.value=funpay;
+  prod_star.value=star;
+}
+async function deleteProduct(id){
+  if(!confirm("Удалить товар?")) return;
+  try{
+    await api("/products/"+id,"DELETE");
+    toast("Товар удалён!");
+    renderShop();
   }catch(e){toast("Ошибка: "+e.message);}
 }
 
