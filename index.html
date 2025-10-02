@@ -7,13 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --glass-bg: rgba(255,255,255,0.05);
-      --glass-border: rgba(255,255,255,0.12);
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.18);
     }
     body {
       color:#fff;
       font-family:Inter,system-ui,sans-serif;
-      background:linear-gradient(-45deg,#050006,#0c0016,#140022,#000);
+      background:linear-gradient(-45deg,#000011,#001040,#002060,#000011);
       background-size:400% 400%;
       animation:gradientMove 18s ease infinite;
       min-height:100vh;
@@ -32,9 +32,9 @@
     .brand {
       font-weight:700;
       font-size:1.2rem;
-      color:#e9d5ff;
+      color:#c7d2fe;
     }
-    /* 🔘 Стеклянные кнопки */
+    /* 🔘 Стеклянные кнопки с внутренним размытием */
     .btn {
       display:inline-flex;
       align-items:center;
@@ -44,15 +44,16 @@
       font-weight:600;
       cursor:pointer;
       border:1px solid var(--glass-border);
-      background:rgba(255,255,255,0.05);
+      background:rgba(255,255,255,0.07);
       color:#fff;
-      backdrop-filter:blur(8px) saturate(140%);
+      backdrop-filter:blur(12px) saturate(160%);
+      box-shadow:inset 0 0 10px rgba(255,255,255,0.08);
       transition:.2s;
     }
-    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.08); }
+    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.12); }
     .btn-primary {
-      border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.35);
+      background:rgba(255,255,255,0.1);
     }
     .card {
       background:var(--glass-bg);
@@ -63,18 +64,22 @@
     }
     .input {
       width:100%;padding:.62rem .85rem;border-radius:10px;
-      background:rgba(255,255,255,0.025);
-      border:1px solid rgba(255,255,255,0.04);
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
       color:#fff;
     }
     .label {display:block;margin-bottom:.25rem;color:rgba(255,255,255,.72);font-size:.88rem}
     .hero {text-align:center;padding:60px 16px 36px;}
-    .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#f3e8ff;}
+    .hero h1 {font-size:2.6rem;margin-bottom:.6rem;color:#dbeafe;}
     .price-old{text-decoration:line-through;opacity:.6;margin-right:.5rem}
-    .price-new{color:#d6b7ff;font-weight:800}
+    .price-new{color:#93c5fd;font-weight:800}
     #toast {position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
     .toast-msg{background:rgba(14,14,20,0.95);padding:.6rem .9rem;border-radius:10px;font-size:.95rem}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    /* 📱 Смещаем кнопку "Почему мы" ниже на телефонах */
+    @media (max-width:640px){
+      .btn-why {margin-top:12px;display:block;width:100%}
+    }
   </style>
 </head>
 <body>
@@ -112,6 +117,11 @@ async function api(path,method="GET",data=null){
     headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},
     body:data?JSON.stringify(data):null
   });
+  if(res.status===401){
+    token=null;localStorage.removeItem("token");currentUser=null;
+    toast("Сессия устарела, войдите снова");
+    renderAuth();return;
+  }
   let txt=await res.text();
   try{return JSON.parse(txt);}catch{throw new Error(txt);}
 }
@@ -124,7 +134,7 @@ function renderHero(){
         <h1>Kernel Project</h1>
         <div style="margin-top:18px;">
           <button class="btn btn-primary" onclick="renderAuth()">Get Started</button>
-          <button class="btn btn-ghost" style="margin-left:10px" onclick="renderWhy()">Почему вы должны выбрать нас?</button>
+          <button class="btn btn-ghost btn-why" style="margin-left:10px" onclick="renderWhy()">Почему вы должны выбрать нас?</button>
         </div>
       </div>
     </section>`;
@@ -189,6 +199,7 @@ async function register(){
 async function renderShop(){
   headerUser.textContent=currentUser?currentUser.email:"Гость";
   let prods=await api("/products");
+  if(!prods) return;
   let html=`<div class="flex gap-3 mb-6">
     <button class="btn btn-ghost" onclick="logout()">Выйти</button>
     <button class="btn btn-ghost" onclick="renderProfile()">Профиль</button>
@@ -295,7 +306,7 @@ async function deleteProduct(id){
 (async()=>{
   if(token){
     try{
-      let me=await api("/me"); // ✅ новый запрос
+      let me=await api("/me");
       if(me?.email){currentUser=me;renderShop();return;}
     }catch{renderHero();}
   }else renderHero();
